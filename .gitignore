@@ -1,0 +1,61 @@
+### Build ###
+target/
+build/
+out/
+!src/main/**/target/
+!src/test/**/target/
+
+### IDE ###
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+### Logs ###
+*.log
+logs/
+log/
+
+### OS Files ###
+.DS_Store
+Thumbs.db
+
+### Spring Boot ###
+# excludes generated jar/war
+*.jar
+*.war
+
+### H2 Database Files ###
+*.db
+*.mv.db
+*.h2.db
+*.trace.db
+
+### Temporary ###
+tmp/
+*.tmp
+*.swp
+*.swo
+
+### Maven ###
+.mvn/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+### Gradle ###
+.gradle/
+gradle-app.setting
+gradle-app.jar
+*.gradle.kts.autosave
+
+### Node (if any UI later) ###
+node_modules/
+npm-debug.log
+yarn-error.log
