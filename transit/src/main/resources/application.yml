@@ -1,0 +1,13 @@
+server:
+  port: 8081
+
+tripmind:
+  location-service:
+    base-url: http://localhost:8082
+  digitransit:
+    base-url: https://api.digitransit.fi
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web.reactive.function.client: INFO
