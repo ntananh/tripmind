@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: assistant
+  ai:
+    openai:
+      api-key: ${GEMINI_API_KEY}
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai
+      chat:
+        options:
+          model: gemini-2.5-flash
+
+services:
+  transit:
+    url: http://localhost:8081
+  location:
+    url: http://localhost:8082
+  reminder:
+    url: http://localhost:8083

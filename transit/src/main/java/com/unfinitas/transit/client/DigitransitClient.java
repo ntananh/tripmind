@@ -7,13 +7,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class DigitransitClient {
+
+    private static final List<String> ROUTES = List.of(
+            "1", "3", "8", "25", "13", "14", "20", "31", "32"
+    );
 
     private final WebClient webClient;
 
@@ -75,12 +77,24 @@ public class DigitransitClient {
     }
 
     private List<DepartureDto> getMockDepartures(final int limit) {
-        return Stream.of(
-                new DepartureDto("3", Instant.now().plusSeconds(180)),
-                new DepartureDto("1", Instant.now().plusSeconds(420)),
-                new DepartureDto("25", Instant.now().plusSeconds(660)),
-                new DepartureDto("8", Instant.now().plusSeconds(900)),
-                new DepartureDto("3", Instant.now().plusSeconds(1200))
-        ).limit(limit).toList();
+        final Random r = new Random();
+        Instant now = Instant.now();
+        final List<DepartureDto> list = new ArrayList<>();
+
+        for (int i = 0; i < limit; i++) {
+            final String route = ROUTES.get(r.nextInt(ROUTES.size()));
+
+            // frequent: 1–5 minutes
+            final int offsetMin = 1 + r.nextInt(5);
+
+            list.add(new DepartureDto(
+                    route,
+                    now.plusSeconds(offsetMin * 60L)
+            ));
+
+            now = now.plusSeconds(offsetMin * 60L);
+        }
+
+        return list;
     }
 }

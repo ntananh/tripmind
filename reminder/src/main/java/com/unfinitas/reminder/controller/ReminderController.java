@@ -31,8 +31,11 @@ public class ReminderController {
                 "status", reminder.getStatus().name(),
                 "triggerTime", reminder.getTriggerTime().toString(),
                 "departureTime", reminder.getDepartureTime().toString(),
-                "message", String.format("Reminder set for %d minutes before departure from %s",
-                        reminder.getMinutesBefore(), reminder.getStopName())
+                "message", String.format(
+                        "Reminder set for %d minutes before departure from %s",
+                        reminder.getMinutesBefore(),
+                        reminder.getStopName()
+                )
         ));
     }
 

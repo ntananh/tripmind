@@ -1,14 +1,16 @@
 package com.unfinitas.transit.controller;
 
+import com.unfinitas.transit.model.DepartureDto;
 import com.unfinitas.transit.model.NextDeparturesResponse;
 import com.unfinitas.transit.service.TransitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/transit")
 public class TransitController {
-
     private final TransitService transitService;
 
     public TransitController(final TransitService transitService) {
@@ -27,5 +29,13 @@ public class TransitController {
     ) {
         final NextDeparturesResponse response = transitService.getNextDepartures(stopName, limit);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/departures")
+    public ResponseEntity<List<DepartureDto>> getDeparturesByStopId(
+            @RequestParam("stopId") final String stopId,
+            @RequestParam(value = "limit", defaultValue = "5") final int limit
+    ) {
+        return ResponseEntity.ok(transitService.getDeparturesByStopId(stopId, limit));
     }
 }

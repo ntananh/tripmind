@@ -34,14 +34,14 @@ public class TransitService {
             return cached.response();
         }
 
-        final LocationSearchResult stop = locationClient.resolveStop(stopName);
+        final LocationSearchResult stop = locationClient.resolveStopByName(stopName);
         if (stop == null) {
             final NextDeparturesResponse empty = new NextDeparturesResponse(stopName, null, List.of());
             cache.put(cacheKey, new CachedEntry(Instant.now(), empty));
             return empty;
         }
 
-        final List<DepartureDto> departures = digitransitClient.fetchNextDepartures(stop.id(), limit);
+        final List<DepartureDto> departures = digitransitClient.fetchNextDepartures(stop.stopId(), limit);
 
         final NextDeparturesResponse response = new NextDeparturesResponse(
                 stop.name(),
@@ -51,6 +51,10 @@ public class TransitService {
 
         cache.put(cacheKey, new CachedEntry(Instant.now(), response));
         return response;
+    }
+
+    public List<DepartureDto> getDeparturesByStopId(final String stopId, final int limit) {
+        return digitransitClient.fetchNextDepartures(stopId, limit);
     }
 
     private record CachedEntry(
