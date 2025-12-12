@@ -33,11 +33,11 @@ public class ReminderService {
     public Reminder createReminder(final ReminderRequest request) {
         log.info("Creating reminder for user {} at stop {}", request.getUserId(), request.getStopName());
 
-        // Parse ISO-8601 timestamps
+        // 1. Parse timestamps from request (ISO strings)
         final LocalDateTime departureTime = LocalDateTime.parse(request.getDepartureTime());
         final LocalDateTime triggerTime = LocalDateTime.parse(request.getTriggerTime());
 
-        // Save reminder
+        // 2. Save reminder into DB
         Reminder reminder = Reminder.builder()
                 .userId(request.getUserId())
                 .stopName(request.getStopName())
@@ -51,11 +51,11 @@ public class ReminderService {
 
         reminder = reminderRepository.save(reminder);
 
-        // Compute JMS delay
+        // 3. Compute delayed delivery time for JMS (relative delay)
         long delayMs = Duration.between(LocalDateTime.now(), triggerTime).toMillis();
         delayMs = Math.max(delayMs, 0);
 
-        // Build event payload
+        // 4. Build event payload
         final ReminderEvent event = ReminderEvent.builder()
                 .reminderId(reminder.getId())
                 .userId(reminder.getUserId())
@@ -71,19 +71,20 @@ public class ReminderService {
                 .departureTime(departureTime)
                 .build();
 
+        // 5. Push JMS delayed message
         try {
             final String json = objectMapper.writeValueAsString(event);
 
             final long finalDelayMs = delayMs;
             jmsTemplate.convertAndSend(notificationQueue, json, msg -> {
-                msg.setLongProperty("_AMQ_SCHED_DELIVERY_DELAY", finalDelayMs);
+                msg.setLongProperty("AMQ_SCHEDULED_DELAY", finalDelayMs);
                 return msg;
             });
 
             log.info("Scheduled reminder {} to fire after {} ms", reminder.getId(), delayMs);
 
         } catch (final Exception e) {
-            log.error("Failed to schedule reminder event", e);
+            log.error("Failed to schedule reminder", e);
         }
 
         return reminder;
